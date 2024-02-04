@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import userRoutes from "./routes/users.js";
+import authRoutes from "./routes/auth.js";
 import multer from "multer";
 
 const app = express();
@@ -16,6 +18,15 @@ app.use(cors(
         credentials: true,
     }
 ))
+
+
+
+
+
+
+app.use("/server/auth", authRoutes);
+app.use("/server/users", userRoutes);
+
 
 
 app.listen(8800, () => {

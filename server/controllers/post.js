@@ -5,14 +5,17 @@
  export const getPosts = (req, res) => {
 
     const token = req.cookies.accessToken;
-    if(!token) return res.status(401).json("Not authenticated!");
+    if(!token) return res.status(401).json("Not authenticated to get posts!");
 
     jwt.verify(token, "secretkey", (err,userInfo) => {
-        if(err) return res.status(403).json("Token is not valid!");
+        if(err) return res.status(403).json("Token is not valid. Please log in!");
     
-    const q = `SELECT p.*,u.id as userid, name, profilePic FROM posts as p JOIN users as u on (u.id = p.userid)
-    LEFT JOIN relationships as r on (p.userid = r.followedUserId) WHERE r.followerUserId = ? OR p.userid = ?
+    const q = `SELECT p.*,u.id as userid, name, profilePic FROM posts as p
+    JOIN users as u on (u.id = p.userid)
+    LEFT JOIN relationships as r on (p.userid = r.followedUserId)
+    WHERE r.followerUserId = ? OR p.userid = ?
     ORDER BY p.createdat DESC`;
+
     db.query(q,[userInfo.id,userInfo.id], (err, data) => {
         if (err) return res.status(500).json(err);
         return res.status(200).json(data);
